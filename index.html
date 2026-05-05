@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Concierge for River West Properties | RoverPass</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1f22;
+            --bg-light: #122a2e;
+            --bg-card: rgba(255,255,255,0.04);
+            --bg-card-hover: rgba(255,255,255,0.08);
+            --coral: #ff6b6b;
+            --coral-light: #ff8a8a;
+            --coral-glow: rgba(255, 107, 107, 0.4);
+            --teal: #4ecdc4;
+            --teal-glow: rgba(78, 205, 196, 0.3);
+            --text: #ffffff;
+            --text-secondary: #a3b8b8;
+            --text-muted: #6b8a8a;
+            --border: rgba(255,255,255,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated gradient orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--coral);
+            top: -200px;
+            right: -200px;
+            animation: float1 20s ease-in-out infinite;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: var(--teal);
+            bottom: -150px;
+            left: -150px;
+            animation: float2 25s ease-in-out infinite;
+        }
+
+        .orb-3 {
+            width: 400px;
+            height: 400px;
+            background: var(--coral);
+            top: 50%;
+            left: 50%;
+            opacity: 0.15;
+            animation: float3 30s ease-in-out infinite;
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-50px, 50px) scale(1.1); }
+            66% { transform: translate(30px, -30px) scale(0.9); }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(40px, -40px) scale(0.9); }
+            66% { transform: translate(-30px, 30px) scale(1.1); }
+        }
+
+        @keyframes float3 {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.3); }
+        }
+
+        /* Slide styles */
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .slide-content {
+            max-width: 1200px;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Typography */
+        h1 {
+            font-size: clamp(48px, 7vw, 80px);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: clamp(36px, 5vw, 56px);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--coral-light) 0%, var(--teal) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .lead {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            line-height: 1.7;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--coral-light);
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Logo */
+        .logo {
+            position: fixed;
+            top: 32px;
+            left: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 100;
+            opacity: 0;
+            animation: fadeIn 1s ease 0.5s forwards;
+        }
+
+        .logo-mark {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--coral) 0%, var(--coral-light) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-mark svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* Slide counter */
+        .slide-counter {
+            position: fixed;
+            bottom: 32px;
+            right: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            z-index: 100;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Navigation dots */
+        .nav-dots {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot:hover {
+            background: var(--text-muted);
+        }
+
+        .nav-dot.active {
+            background: var(--coral);
+            box-shadow: 0 0 20px var(--coral-glow);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255,255,255,0.12);
+            transform: translateY(-4px);
+        }
+
+        /* Feature grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .feature-card {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feature-card:nth-child(2) { transition-delay: 0.1s; }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon.purple { background: linear-gradient(135deg, #ff6b6b 0%, #ff8a8a 100%); }
+        .feature-icon.green { background: linear-gradient(135deg, #4ecdc4 0%, #3dbdb5 100%); }
+
+        .feature-card h3 {
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        /* Demo section */
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .demo-content h3 {
+            color: var(--coral-light);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        /* Phone mockup */
+        .phone {
+            width: 280px;
+            height: 580px;
+            background: linear-gradient(145deg, #1a1a2e 0%, #0f0f1a 100%);
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.1),
+                0 25px 50px -12px rgba(0,0,0,0.8),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            margin: 0 auto;
+            transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .phone:hover {
+            transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #0f0f1a;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .phone-notch {
+            width: 120px;
+            height: 28px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .phone-notch::before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #1a1a2e;
+            border-radius: 50%;
+            top: 8px;
+            right: 30px;
+        }
+
+        /* Chat UI inside phone */
+        .chat-ui {
+            padding: 16px;
+            height: calc(100% - 28px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--coral) 0%, var(--teal) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .chat-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .chat-status {
+            font-size: 11px;
+            color: var(--teal);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .chat-status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--teal);
+            border-radius: 50%;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg {
+            max-width: 85%;
+            animation: msgIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        .msg.ai { align-self: flex-start; }
+        .msg.user { align-self: flex-end; }
+
+        .msg:nth-child(1) { animation-delay: 0.5s; }
+        .msg:nth-child(2) { animation-delay: 1.2s; }
+        .msg:nth-child(3) { animation-delay: 1.8s; }
+        .msg:nth-child(4) { animation-delay: 2.5s; }
+
+        @keyframes msgIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .msg.ai .msg-bubble {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+        }
+
+        .msg.user .msg-bubble {
+            background: linear-gradient(135deg, var(--coral) 0%, #ff8a8a 100%);
+        }
+
+        /* Pricing */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-top: 48px;
+            max-width: 900px;
+        }
+
+        .price-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .price-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--coral) 0%, var(--teal) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .price-card:hover::before {
+            opacity: 1;
+        }
+
+        .price-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .price-desc {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 24px;
+        }
+
+        .price-amount {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            margin-bottom: 24px;
+        }
+
+        .price-value {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .price-period {
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+
+        .price-features {
+            list-style: none;
+        }
+
+        .price-features li {
+            padding: 10px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .price-features li:last-child {
+            border-bottom: none;
+        }
+
+        .price-features li::before {
+            content: '✓';
+            color: var(--teal);
+            font-weight: 600;
+        }
+
+        /* Bundle */
+        .bundle-card {
+            margin-top: 32px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(34, 197, 94, 0.1) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .bundle-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, var(--coral) 0%, var(--teal) 100%);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .bundle-price {
+            text-align: right;
+        }
+
+        .bundle-save {
+            font-size: 14px;
+            color: var(--teal);
+            margin-top: 8px;
+        }
+
+        /* Timeline */
+        .timeline {
+            margin-top: 48px;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--coral) 0%, var(--teal) 100%);
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 32px;
+            padding-bottom: 48px;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .timeline-item:nth-child(2) { transition-delay: 0.15s; }
+        .timeline-item:nth-child(3) { transition-delay: 0.3s; }
+
+        .timeline-marker {
+            width: 50px;
+            height: 50px;
+            background: var(--bg);
+            border: 2px solid var(--coral);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline-content h3 {
+            margin-bottom: 8px;
+        }
+
+        .timeline-content p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        .timeline-badge {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--coral-light);
+        }
+
+        /* CTA */
+        .cta-section {
+            text-align: center;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--coral) 0%, #ff8a8a 100%);
+            color: white;
+            box-shadow: 0 4px 20px var(--coral-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--coral-glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        /* Voice note */
+        .voice-note {
+            margin-top: 48px;
+            padding: 24px 32px;
+            background: rgba(251, 191, 36, 0.05);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .voice-note-icon {
+            font-size: 24px;
+        }
+
+        .voice-note h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fbbf24;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .voice-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .exp-badge {
+            padding: 2px 8px;
+            background: rgba(251, 191, 36, 0.2);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* Usage */
+        .usage-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .usage-item {
+            text-align: center;
+            padding: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .usage-value {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--coral-light) 0%, var(--teal) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .usage-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Stagger children */
+        .stagger > * {
+            opacity: 0;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .stagger.visible > *:nth-child(1) { animation-delay: 0s; }
+        .stagger.visible > *:nth-child(2) { animation-delay: 0.1s; }
+        .stagger.visible > *:nth-child(3) { animation-delay: 0.2s; }
+        .stagger.visible > *:nth-child(4) { animation-delay: 0.3s; }
+        .stagger.visible > *:nth-child(5) { animation-delay: 0.4s; }
+
+        /* Footer */
+        .footer {
+            padding: 60px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Logo -->
+    <div class="logo">
+        <div class="logo-mark">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+        </div>
+        <span class="logo-text">roverpass</span>
+    </div>
+
+    <!-- Navigation dots -->
+    <div class="nav-dots">
+        <div class="nav-dot active" data-slide="0"></div>
+        <div class="nav-dot" data-slide="1"></div>
+        <div class="nav-dot" data-slide="2"></div>
+        <div class="nav-dot" data-slide="3"></div>
+        <div class="nav-dot" data-slide="4"></div>
+        <div class="nav-dot" data-slide="5"></div>
+        <div class="nav-dot" data-slide="6"></div>
+        <div class="nav-dot" data-slide="7"></div>
+        <div class="nav-dot" data-slide="8"></div>
+    </div>
+
+    <!-- Slide 1: Title -->
+    <section class="slide" id="slide-0">
+        <div class="slide-content stagger">
+            <div class="tag">Proposal for River West Properties</div>
+            <h1>AI Concierge<br><span class="gradient-text">for your guests</span></h1>
+            <p class="lead">Answer guest questions instantly across all 8 properties—24/7, via chat and text. Built on your existing Ring Central system.</p>
+        </div>
+    </section>
+
+    <!-- Slide 2: Channels -->
+    <section class="slide" id="slide-1">
+        <div class="slide-content stagger">
+            <div class="tag">Two channels</div>
+            <h2>Meet guests where they are</h2>
+            <p class="lead">AI-powered responses on your websites and phone numbers.</p>
+
+            <div class="feature-grid">
+                <div class="card feature-card">
+                    <div class="feature-icon purple">💬</div>
+                    <h3>Website Chatbot</h3>
+                    <p>A chat widget on each property site. Guests ask questions, AI responds instantly with accurate info from your FAQs.</p>
+                </div>
+                <div class="card feature-card">
+                    <div class="feature-icon green">📱</div>
+                    <h3>SMS Replies</h3>
+                    <p>When guests text your Ring Central numbers, AI responds automatically. Works with your existing phone system.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 3: Chatbot Demo -->
+    <section class="slide" id="slide-2">
+        <div class="slide-content">
+            <div class="demo-grid">
+                <div class="demo-content stagger">
+                    <h3>Chatbot</h3>
+                    <h2>Instant answers<br>on your website</h2>
+                    <p class="lead">Guests click the chat bubble, ask a question, and get an accurate response in seconds—not minutes or hours.</p>
+                </div>
+                <div>
+                    <div class="phone">
+                        <div class="phone-screen">
+                            <div class="phone-notch"></div>
+                            <div class="chat-ui">
+                                <div class="chat-header">
+                                    <div class="chat-avatar">🏕️</div>
+                                    <div>
+                                        <div class="chat-name">Kozy Kampground</div>
+                                        <div class="chat-status">Online</div>
+                                    </div>
+                                </div>
+                                <div class="chat-messages">
+                                    <div class="msg ai">
+                                        <div class="msg-bubble">Hi! 👋 How can I help you today?</div>
+                                    </div>
+                                    <div class="msg user">
+                                        <div class="msg-bubble">Do you allow dogs?</div>
+                                    </div>
+                                    <div class="msg ai">
+                                        <div class="msg-bubble">Yes! Dogs are welcome. We just ask that they stay leashed and you clean up after them. Max 2 pets per site.</div>
+                                    </div>
+                                    <div class="msg user">
+                                        <div class="msg-bubble">Perfect, thanks!</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 4: SMS Demo -->
+    <section class="slide" id="slide-3">
+        <div class="slide-content">
+            <div class="demo-grid" style="direction: rtl;">
+                <div class="demo-content stagger" style="direction: ltr;">
+                    <h3>SMS</h3>
+                    <h2>AI replies to<br>text messages</h2>
+                    <p class="lead">When someone texts your Ring Central number, AI responds automatically. Your staff can jump in anytime from the dashboard.</p>
+                </div>
+                <div style="direction: ltr;">
+                    <div class="phone">
+                        <div class="phone-screen">
+                            <div class="phone-notch"></div>
+                            <div class="chat-ui">
+                                <div class="chat-header">
+                                    <div class="chat-avatar">📱</div>
+                                    <div>
+                                        <div class="chat-name">(419) 555-0100</div>
+                                        <div class="chat-status">Western Reserve</div>
+                                    </div>
+                                </div>
+                                <div class="chat-messages">
+                                    <div class="msg user">
+                                        <div class="msg-bubble">What time is checkout?</div>
+                                    </div>
+                                    <div class="msg ai">
+                                        <div class="msg-bubble">Checkout is at 11am. If you need a late checkout, just let us know and we'll do our best to accommodate!</div>
+                                    </div>
+                                    <div class="msg user">
+                                        <div class="msg-bubble">Is there a dump station?</div>
+                                    </div>
+                                    <div class="msg ai">
+                                        <div class="msg-bubble">Yes! We have a dump station near the entrance. It's free for all guests.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 5: Dashboard -->
+    <section class="slide" id="slide-4">
+        <div class="slide-content stagger">
+            <div class="tag">Included</div>
+            <h2>Staff dashboard</h2>
+            <p class="lead">See every conversation across all properties. Review transcripts, jump in when needed, and track what guests ask most.</p>
+
+            <div class="card" style="margin-top: 40px; padding: 0; overflow: hidden; position: relative;">
+                <div style="background: rgba(255,255,255,0.02); padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center;">
+                    <span style="width: 12px; height: 12px; background: #ef4444; border-radius: 50%;"></span>
+                    <span style="width: 12px; height: 12px; background: #fbbf24; border-radius: 50%;"></span>
+                    <span style="width: 12px; height: 12px; background: #4ecdc4; border-radius: 50%;"></span>
+                    <span style="margin-left: auto; font-size: 12px; color: var(--text-muted);">dashboard.roverpass.com</span>
+                </div>
+                <div style="padding: 24px; display: grid; grid-template-columns: 180px 280px 1fr; gap: 20px;">
+                    <!-- Sidebar -->
+                    <div style="border-right: 1px solid var(--border); padding-right: 20px;">
+                        <div style="font-weight: 700; font-size: 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                            <span style="width: 28px; height: 28px; background: var(--coral); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">✓</span>
+                            roverpass
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 4px; font-size: 13px;">
+                            <div style="padding: 8px 12px; background: var(--coral); border-radius: 6px;">💬 Conversations</div>
+                            <div style="padding: 8px 12px; color: var(--text-muted);">📊 Analytics</div>
+                            <div style="padding: 8px 12px; color: var(--text-muted);">📚 FAQs</div>
+                        </div>
+                        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Properties</div>
+                        <div style="display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-secondary);">
+                            <div style="padding: 6px 0;">🏕️ Kozy Kampground</div>
+                            <div style="padding: 6px 0;">🌲 Western Reserve</div>
+                            <div style="padding: 6px 0;">🏞️ Berkshire Lake</div>
+                            <div style="padding: 6px 0; color: var(--text-muted);">+ 5 more</div>
+                        </div>
+                    </div>
+                    <!-- Conversation List -->
+                    <div style="border-right: 1px solid var(--border); padding-right: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px;">
+                            <div style="padding: 12px; background: var(--bg-card); border-radius: 10px; text-align: center;">
+                                <div style="font-size: 22px; font-weight: 700; color: var(--coral-light);">24</div>
+                                <div style="font-size: 10px; color: var(--text-muted);">Active</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--bg-card); border-radius: 10px; text-align: center;">
+                                <div style="font-size: 22px; font-weight: 700; color: var(--teal);">94%</div>
+                                <div style="font-size: 10px; color: var(--text-muted);">AI handled</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="padding: 12px; background: var(--bg-card); border-radius: 10px; border-left: 3px solid var(--coral);">
+                                <div style="font-size: 11px; color: var(--teal); margin-bottom: 4px;">Kozy Kampground</div>
+                                <div style="font-size: 13px; font-weight: 500; margin-bottom: 2px;">Do you allow dogs?</div>
+                                <div style="font-size: 11px; color: var(--text-muted);">2 min ago • ✓ AI handled</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--bg-card); border-radius: 10px;">
+                                <div style="font-size: 11px; color: var(--teal); margin-bottom: 4px;">Western Reserve</div>
+                                <div style="font-size: 13px; font-weight: 500; margin-bottom: 2px;">What time is checkout?</div>
+                                <div style="font-size: 11px; color: var(--text-muted);">5 min ago • ✓ AI handled</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--bg-card); border-radius: 10px;">
+                                <div style="font-size: 11px; color: var(--teal); margin-bottom: 4px;">Berkshire Lake</div>
+                                <div style="font-size: 13px; font-weight: 500; margin-bottom: 2px;">Change reservation dates</div>
+                                <div style="font-size: 11px; color: #fbbf24;">8 min ago • ⏳ Needs staff</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--bg-card); border-radius: 10px;">
+                                <div style="font-size: 11px; color: var(--teal); margin-bottom: 4px;">Twin Lakes Resort</div>
+                                <div style="font-size: 13px; font-weight: 500; margin-bottom: 2px;">Is there a dump station?</div>
+                                <div style="font-size: 11px; color: var(--text-muted);">12 min ago • ✓ AI handled</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Conversation Detail -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div>
+                                <div style="font-size: 14px; font-weight: 600;">Do you allow dogs?</div>
+                                <div style="font-size: 11px; color: var(--text-muted);">Kozy Kampground • 💬 Chatbot</div>
+                            </div>
+                            <div style="padding: 6px 12px; background: var(--coral); border-radius: 6px; font-size: 11px; font-weight: 600;">Take Over</div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+                            <div style="display: flex; gap: 8px;">
+                                <div style="width: 24px; height: 24px; background: var(--coral); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0;">🤖</div>
+                                <div style="background: var(--bg-card); border-radius: 12px; padding: 10px 14px; max-width: 85%;">Hi! 👋 How can I help you today?</div>
+                            </div>
+                            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                <div style="background: var(--teal); color: #0d1f22; border-radius: 12px; padding: 10px 14px; max-width: 85%;">Do you allow dogs at the campground?</div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <div style="width: 24px; height: 24px; background: var(--coral); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0;">🤖</div>
+                                <div style="background: var(--bg-card); border-radius: 12px; padding: 10px 14px; max-width: 85%;">Yes! Dogs are welcome. 🐕 We just ask that they stay leashed and you clean up after them. Max 2 pets per site.</div>
+                            </div>
+                            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                <div style="background: var(--teal); color: #0d1f22; border-radius: 12px; padding: 10px 14px;">Perfect, thanks!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px; text-align: center;">
+                <a href="dashboard.html" target="_blank" class="btn btn-primary" style="text-decoration: none;">
+                    🖥️ Try the Interactive Demo →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 6: How it works -->
+    <section class="slide" id="slide-5">
+        <div class="slide-content stagger">
+            <div class="tag">Setup</div>
+            <h2>We learn from your data</h2>
+            <p class="lead">We connect to Ring Central and analyze past calls and emails to understand what your guests actually ask—then build custom FAQs for each property.</p>
+
+            <div class="feature-grid" style="margin-top: 48px;">
+                <div class="card feature-card">
+                    <h3>Ring Central Analysis</h3>
+                    <p>We scan call logs and transcripts to identify the most common questions guests ask across all 8 properties.</p>
+                </div>
+                <div class="card feature-card">
+                    <h3>Email Mining</h3>
+                    <p>We analyze historical emails to understand how your staff answers questions—then train AI to respond the same way.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 7: Pricing -->
+    <section class="slide" id="slide-6">
+        <div class="slide-content stagger">
+            <div class="tag">Pricing</div>
+            <h2>Simple, predictable pricing</h2>
+            <p class="lead">All 8 properties included. $2,000 one-time onboarding fee. 12-month agreement.</p>
+
+            <div class="pricing-grid">
+                <div class="card price-card">
+                    <div class="price-name">💬 Chatbot</div>
+                    <p class="price-desc">AI chat widget for all property websites.</p>
+                    <div class="price-amount">
+                        <span class="price-value">$800</span>
+                        <span class="price-period">/month</span>
+                    </div>
+                    <ul class="price-features">
+                        <li>All 8 property websites</li>
+                        <li>Custom FAQs per property</li>
+                        <li>Staff dashboard</li>
+                        <li>Ring Central data mining</li>
+                        <li>Ongoing support</li>
+                    </ul>
+                </div>
+                <div class="card price-card">
+                    <div class="price-name">📱 SMS</div>
+                    <p class="price-desc">AI replies on your Ring Central numbers.</p>
+                    <div class="price-amount">
+                        <span class="price-value">$400</span>
+                        <span class="price-period">/month</span>
+                    </div>
+                    <ul class="price-features">
+                        <li>All 8 phone numbers</li>
+                        <li>Ring Central integration</li>
+                        <li>Human takeover anytime</li>
+                        <li>Conversation history</li>
+                        <li>Ongoing support</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card bundle-card">
+                <div>
+                    <div class="bundle-badge">BEST VALUE</div>
+                    <h3>Bundle both channels</h3>
+                    <p style="color: var(--text-secondary);">Get Chatbot + SMS together at a discounted rate.</p>
+                </div>
+                <div class="bundle-price">
+                    <div class="price-amount" style="margin: 0;">
+                        <span class="price-value">$1,100</span>
+                        <span class="price-period">/month</span>
+                    </div>
+                    <div class="bundle-save">Save $1,200/year</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px; padding: 20px 28px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">One-time onboarding fee</div>
+                    <div style="font-size: 14px; color: var(--text-secondary);">Covers Ring Central integration, data mining, FAQ setup, and training</div>
+                </div>
+                <div style="font-size: 28px; font-weight: 700;">$2,000</div>
+            </div>
+
+            <div style="margin-top: 16px; text-align: center; font-size: 14px; color: var(--text-muted);">
+                12-month agreement required
+            </div>
+
+            <div class="voice-note">
+                <div class="voice-note-icon">📞</div>
+                <div>
+                    <h4>Voice AI <span class="exp-badge">EXPERIMENTAL</span></h4>
+                    <p>AI-powered phone answering is available, but the technology is still maturing with higher error rates than chat and SMS. Ask us if you'd like to pilot it.</p>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 32px; padding: 32px;">
+                <h3 style="margin-bottom: 20px;">What's included</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 32px; font-weight: 800; color: var(--coral-light);">8</div>
+                        <div style="font-size: 13px; color: var(--text-muted);">Properties</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 32px; font-weight: 800; color: var(--coral-light);">2,000</div>
+                        <div style="font-size: 13px; color: var(--text-muted);">Conversations/mo per channel</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 32px; font-weight: 800; color: var(--coral-light);">∞</div>
+                        <div style="font-size: 13px; color: var(--text-muted);">Dashboard users</div>
+                    </div>
+                </div>
+                <div style="border-top: 1px solid var(--border); padding-top: 20px;">
+                    <div style="font-weight: 600; margin-bottom: 8px;">Usage pricing if you exceed limits</div>
+                    <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.7;">
+                        Your monthly price includes 2,000 conversations per channel. If you go over, additional conversations are billed at <strong style="color: var(--text);">$0.15 each</strong>. We'll notify you when you're approaching the limit—no surprises.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 8: Timeline -->
+    <section class="slide" id="slide-7">
+        <div class="slide-content stagger">
+            <div class="tag">Implementation</div>
+            <h2>How we get you live</h2>
+            <p class="lead">Start with one channel, add more as you see results.</p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker">1</div>
+                    <div class="timeline-content">
+                        <h3>Learn your business</h3>
+                        <p>We connect to Ring Central and scan emails to understand what guests actually ask.</p>
+                        <span class="timeline-badge">Weeks 1–3</span>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">2</div>
+                    <div class="timeline-content">
+                        <h3>Launch Chatbot</h3>
+                        <p>Deploy the chat widget on all 8 property websites and monitor results together.</p>
+                        <span class="timeline-badge">Weeks 4–6</span>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">3</div>
+                    <div class="timeline-content">
+                        <h3>Add SMS</h3>
+                        <p>Once Chatbot is running smoothly, enable AI replies on your Ring Central numbers.</p>
+                        <span class="timeline-badge">Weeks 7+</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 9: CTA -->
+    <section class="slide" id="slide-8">
+        <div class="slide-content cta-section stagger">
+            <h2>Ready to get started?</h2>
+            <p class="lead" style="margin: 0 auto;">Let's schedule a call to walk through the platform and answer any questions.</p>
+
+            <div class="cta-buttons">
+                <a href="tel:+17372525625" class="btn btn-primary">
+                    📞 Call 737-252-5625
+                </a>
+                <a href="https://software.roverpass.com" class="btn btn-secondary">
+                    🌐 software.roverpass.com
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2026 RoverPass · Outdoor Hospitality Software</p>
+    </div>
+
+    <script>
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+
+                    // Update nav dots
+                    const slideId = entry.target.id;
+                    if (slideId) {
+                        const slideNum = parseInt(slideId.split('-')[1]);
+                        document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                            dot.classList.toggle('active', i === slideNum);
+                        });
+                    }
+                }
+            });
+        }, { threshold: 0.3 });
+
+        // Observe all slide contents and animated elements
+        document.querySelectorAll('.slide-content, .feature-card, .timeline-item').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Nav dot click handling
+        document.querySelectorAll('.nav-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                const slideNum = dot.dataset.slide;
+                document.getElementById(`slide-${slideNum}`).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Trigger initial animations
+        setTimeout(() => {
+            document.querySelector('.slide-content').classList.add('visible');
+        }, 300);
+    </script>
+</body>
+</html>
